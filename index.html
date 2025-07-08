@@ -6,7 +6,7 @@
     <meta name="description" content="Professional Bay Area construction cost calculator for painting, flooring, and window installation. Get accurate estimates based on your specific zip code.">
     <meta name="keywords" content="Bay Area construction, cost calculator, painting estimate, flooring cost, window installation, San Francisco contractor">
     <meta name="author" content="Bay Area Construction Calculator">
-    <title>Bay Area Construction Cost Calculator - Accurate Estimates</title>
+    <title>Bay Area Construction Cost Calculator Estimates</title>
     <style>
         * {
             margin: 0;
@@ -243,12 +243,39 @@
             font-weight: 700;
         }
 
-        .zipcode-info {
-            background: rgba(255,255,255,0.1);
-            padding: 15px;
+        .sq-ft-calculator {
+            background: #e8f4fd;
+            border: 2px solid #3498db;
             border-radius: 10px;
+            padding: 20px;
             margin-bottom: 20px;
+        }
+
+        .sq-ft-calculator h4 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.1em;
             text-align: center;
+        }
+
+        .calc-sqft-btn {
+            background: linear-gradient(135deg, #e67e22 0%, #d35400 100%);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 10px;
+            -webkit-tap-highlight-color: rgba(0,0,0,0);
+        }
+
+        .calc-sqft-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(230, 126, 34, 0.3);
         }
 
         .footer {
@@ -430,6 +457,19 @@
                 font-size: 0.9em;
             }
 
+            .sq-ft-calculator {
+                padding: 15px;
+            }
+
+            .sq-ft-calculator h4 {
+                font-size: 1em;
+            }
+
+            .calc-sqft-btn {
+                padding: 8px 15px;
+                font-size: 12px;
+            }
+
             .footer {
                 padding: 15px;
             }
@@ -538,6 +578,24 @@
                             <label for="painting" class="service-title">Interior/Exterior Painting</label>
                         </div>
                         <div class="service-details" id="painting-details">
+                            <div class="sq-ft-calculator">
+                                <h4>📐 Square Footage Calculator</h4>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="painting-length">Length (ft):</label>
+                                        <input type="number" id="painting-length" placeholder="e.g., 20" step="0.1">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="painting-width">Width (ft):</label>
+                                        <input type="number" id="painting-width" placeholder="e.g., 15" step="0.1">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="painting-height">Height (ft):</label>
+                                        <input type="number" id="painting-height" placeholder="e.g., 9" step="0.1">
+                                    </div>
+                                </div>
+                                <button type="button" class="calc-sqft-btn" onclick="calculatePaintingSqft()">Calculate Square Footage</button>
+                            </div>
                             <div class="form-row">
                                 <div class="form-group">
                                     <label for="painting-sqft">Square Footage:</label>
@@ -575,6 +633,20 @@
                             <label for="flooring" class="service-title">Flooring Installation</label>
                         </div>
                         <div class="service-details" id="flooring-details">
+                            <div class="sq-ft-calculator">
+                                <h4>📐 Square Footage Calculator</h4>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="flooring-length">Length (ft):</label>
+                                        <input type="number" id="flooring-length" placeholder="e.g., 20" step="0.1">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="flooring-width">Width (ft):</label>
+                                        <input type="number" id="flooring-width" placeholder="e.g., 15" step="0.1">
+                                    </div>
+                                </div>
+                                <button type="button" class="calc-sqft-btn" onclick="calculateFlooringSqft()">Calculate Square Footage</button>
+                            </div>
                             <div class="form-row">
                                 <div class="form-group">
                                     <label for="flooring-sqft">Square Footage:</label>
@@ -723,6 +795,64 @@
                 picture: { basic: 350, 'mid-range': 500, 'high-end': 750 }
             }
         };
+
+        // Square footage calculation functions
+        function calculatePaintingSqft() {
+            const length = parseFloat(document.getElementById('painting-length').value) || 0;
+            const width = parseFloat(document.getElementById('painting-width').value) || 0;
+            const height = parseFloat(document.getElementById('painting-height').value) || 0;
+            
+            if (length > 0 && width > 0 && height > 0) {
+                // Calculate wall area: 2 * (length * height) + 2 * (width * height)
+                // This assumes painting walls, not floor/ceiling
+                const wallArea = 2 * (length * height) + 2 * (width * height);
+                document.getElementById('painting-sqft').value = Math.round(wallArea);
+                
+                // Show calculation result
+                showCalculationResult('painting', `Wall Area: ${Math.round(wallArea)} sq ft`);
+            } else {
+                alert('Please enter length, width, and height values!');
+            }
+        }
+
+        function calculateFlooringSqft() {
+            const length = parseFloat(document.getElementById('flooring-length').value) || 0;
+            const width = parseFloat(document.getElementById('flooring-width').value) || 0;
+            
+            if (length > 0 && width > 0) {
+                // Calculate floor area: length * width
+                const floorArea = length * width;
+                document.getElementById('flooring-sqft').value = Math.round(floorArea);
+                
+                // Show calculation result
+                showCalculationResult('flooring', `Floor Area: ${Math.round(floorArea)} sq ft`);
+            } else {
+                alert('Please enter length and width values!');
+            }
+        }
+
+        function showCalculationResult(service, message) {
+            // Remove any existing result
+            const existingResult = document.querySelector(`#${service}-details .calculation-result`);
+            if (existingResult) {
+                existingResult.remove();
+            }
+            
+            // Create and show new result
+            const resultDiv = document.createElement('div');
+            resultDiv.className = 'calculation-result';
+            resultDiv.textContent = message;
+            
+            const calculator = document.querySelector(`#${service}-details .sq-ft-calculator`);
+            calculator.appendChild(resultDiv);
+            
+            // Auto-remove after 3 seconds
+            setTimeout(() => {
+                if (resultDiv.parentNode) {
+                    resultDiv.remove();
+                }
+            }, 3000);
+        }
 
         // Handle service selection
         document.querySelectorAll('.service-checkbox').forEach(checkbox => {
